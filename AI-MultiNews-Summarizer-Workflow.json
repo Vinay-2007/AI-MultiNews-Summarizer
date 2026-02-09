@@ -1,0 +1,296 @@
+{
+  "name": "AI News Summarizer",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        48
+      ],
+      "id": "5de29e86-a83f-4b13-a986-6ca33f0c0374",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://aibusiness.com/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -144
+      ],
+      "id": "1a149f24-a9b4-4915-a5df-8d98cf51e65e",
+      "name": "AI News Feed"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        448,
+        48
+      ],
+      "id": "3e6c0047-3fbb-4645-aee4-c8869c0fa135",
+      "name": "Info AGR"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an AI newsletter assistant creating a daily intelligence report from multiple categories.\nUse only the provided items. Do not invent content.\nOrganize the provided items by category and Format exactly like this:\n\nHi there,\nHere's your Tech Brief:\nadd an image related to the whole summary\n\nAI NEWS HIGHLIGHTS\n\n[5 most important Al developments] \nFor each AI-related item, output: \nHEADLINE IN ALL CAPS \nSummary in 1-2 sentences.\nLink: <paste link>\n\nTECHNOLOGY UPDATES\n\n[Latest broader technology-related developments from major tech sources] \nFor each broader technology-related item, output:\n HEADLINE IN ALL CAPS \nSummary in 1-2 sentences.\nLink: <paste link>\n\nUPCOMING AI EVENTS\n\n[List events with date, location, description] \nIf no events found: \"No Al events scheduled this week\"\n\nFor each Event Item \nHEADLINE IN ALL CAPS \nSummary in 1-2 sentences.\nLink: <paste links\n\nKeep the summaries professional, concise, and easy to read.\n\nSign off as \"Your Al Intelligence Team\""
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        672,
+        48
+      ],
+      "id": "b44877a7-8767-4c47-bc16-c10d0cd9ab0d",
+      "name": "AI Summarization Model"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        752,
+        272
+      ],
+      "id": "e020f50e-7868-4089-8831-fe680a3f3a41",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sW5S6Anab8rdGnTe",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "vinnuig321@gmail.com",
+        "subject": "Today's AI News For You",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        48
+      ],
+      "id": "a02bb0cb-7efa-4795-95bc-f28973e3c2c0",
+      "name": "Send a message",
+      "webhookId": "4b866a61-4ccd-49cc-97ec-952566a2d77c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rsi7e1hDU7TnjrWX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        240
+      ],
+      "id": "8fc980cd-0b06-4816-a172-c3620ccd1bf1",
+      "name": "Tech Feed"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        32
+      ],
+      "id": "a6690aa1-2d7b-4345-9b47-124d789855c8",
+      "name": "Data Merger"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_events"
+            },
+            {
+              "name": "q",
+              "value": "AI Tech Events in India"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            },
+            {
+              "name": "api_key",
+              "value": "8c9a0877fcf4d5ebab57dd290ee26e3e3c06e9baae94f4a519dcb9330dcba567"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        48
+      ],
+      "id": "aedc78c0-a49b-42ce-93f0-19da3145d42c",
+      "name": "Fetch Events"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI News Feed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Tech Feed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI News Feed": {
+      "main": [
+        [
+          {
+            "node": "Data Merger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info AGR": {
+      "main": [
+        [
+          {
+            "node": "AI Summarization Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Summarization Model",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Summarization Model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tech Feed": {
+      "main": [
+        [
+          {
+            "node": "Data Merger",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Data Merger": {
+      "main": [
+        [
+          {
+            "node": "Info AGR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Events": {
+      "main": [
+        [
+          {
+            "node": "Data Merger",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
