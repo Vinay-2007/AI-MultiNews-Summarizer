@@ -40,4 +40,4 @@ See screenshots in project
 
 ## 👨‍💻 Author
 Vinay P  
-BTech CSE (AI & Automation Enthusiast)
+BTech CSBS (AI & Automation Enthusiast)
